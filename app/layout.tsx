@@ -2,7 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { Inter, Amiri } from 'next/font/google';
 import { cn } from '@/lib/utils';
-import { BookOpen, Trophy, Zap } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
 const amiri = Amiri({
@@ -23,8 +23,8 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={cn(inter.variable, amiri.variable)}>
-      <body className="font-inter bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
-        <header className="border-b bg-white/80 backdrop-blur-sm">
+      <body className={inter.className}>
+        <header className="border-b bg-gray-50 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-16">
               <div className="flex items-center space-x-3">

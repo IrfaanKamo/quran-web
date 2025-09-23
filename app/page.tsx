@@ -1,8 +1,23 @@
+import { SurahList } from "@/components/surah-list";
 import { BookOpen } from "lucide-react";
 
 export default function Home() {
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50">
+      <div className="bg-gray-900 text-white py-12 mt-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          QuranMind
+        </div>
+      </div>
+
+      {/* Surah List */}
+      <section className="max-w-6xl mx-auto pt-12 pb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          Select a Surah to Memorize
+        </h2>
+        <SurahList />
+      </section>
+
       <footer className="bg-gray-900 text-white py-12 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
