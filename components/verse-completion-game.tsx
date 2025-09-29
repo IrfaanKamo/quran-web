@@ -27,8 +27,8 @@ export function VerseCompletionGame({
   onNext,
 }: VerseCompletionGameProps) {
   const words: Word[] = currentVerse.words;
-  const verseProgress = (currentWordIndex / words.length) * 100;
-  const completedWords = words.slice(0, currentWordIndex);
+  const verseProgress = isVerseCompleted ? 100 : (currentWordIndex / words.length) * 100;
+  const completedWords = isVerseCompleted ? words : words.slice(0, currentWordIndex);
 
   const [guessState, setGuessState] = useState<WordGuessState | null>(null);
 
@@ -90,7 +90,7 @@ export function VerseCompletionGame({
               <CardTitle className="text-lg">Ayah {currentVerse.verse_number}</CardTitle>
               <div className="flex items-center space-x-2">
                 <Badge variant="secondary">
-                  {currentWordIndex} / {words.length}
+                  {isVerseCompleted ? words.length : currentWordIndex} / {words.length}
                 </Badge>
               </div>
             </div>
@@ -209,10 +209,10 @@ export function VerseCompletionGame({
                 <div className="text-center p-6 bg-green-50 rounded-2xl border-2 border-green-200">
                   <div className="text-2xl mb-2">🎉</div>
                   <h3 className="text-lg font-semibold text-green-800 mb-2">
-                    Excellent! Verse completed correctly!
+                    MashAllah! Ayah completed correctly!
                   </h3>
                   <p className="text-green-600">
-                    You can now play the audio and move to the next verse.
+                    You can now play the audio and move to the next ayah.
                   </p>
                 </div>
                 {/* Controls */}
