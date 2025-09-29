@@ -1,11 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Verse, SurahProgress, VerseProgress } from '@/types/quran';
-import { WordGuessGame } from './word-guess-game';
-import { VerseDisplay } from './verse-display';
+import { Verse, SurahProgress, VerseProgress, VerseViewMode } from '@/types/quran';
 import { NavigationControls } from './navigation-controls';
-//import { LoadingSpinner } from './ui/loading-spinner';
+import { LoadingSpinner } from './ui/loading-spinner';
+import { WordGuess } from './word-guess';
 
 interface MemorizationInterfaceProps {
   verses: Verse[];
@@ -13,12 +12,10 @@ interface MemorizationInterfaceProps {
   surahName: string;
 }
 
-type ViewMode = 'memorizing' | 'completed' | 'review';
-
 export function MemorizationInterface({ verses, surahId, surahName }: MemorizationInterfaceProps) {
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [viewMode, setViewMode] = useState<ViewMode>('memorizing');
+  const [viewMode, setViewMode] = useState<VerseViewMode>('memorizing');
   const [progress, setProgress] = useState<SurahProgress>({
     surahId,
     currentVerseIndex: 0,
@@ -77,23 +74,6 @@ export function MemorizationInterface({ verses, surahId, surahName }: Memorizati
     }
   };
 
-  const handleAllWordsComplete = () => {
-    setViewMode('completed');
-  };
-
-  const handleContinueToNext = () => {
-    if (currentVerseIndex < totalVerses - 1) {
-      setCurrentVerseIndex(currentVerseIndex + 1);
-      setCurrentWordIndex(0);
-      setViewMode('memorizing');
-      
-      setProgress(prev => ({
-        ...prev,
-        currentVerseIndex: currentVerseIndex + 1
-      }));
-    }
-  };
-
   const handlePrevious = () => {
     if (currentVerseIndex > 0) {
       setCurrentVerseIndex(currentVerseIndex - 1);
@@ -106,10 +86,10 @@ export function MemorizationInterface({ verses, surahId, surahName }: Memorizati
     if (currentVerseIndex < totalVerses - 1) {
       setCurrentVerseIndex(currentVerseIndex + 1);
       setCurrentWordIndex(0);
-      
+
       const isCompleted = progress.completedVerses.includes(currentVerseIndex + 1);
       setViewMode(isCompleted ? 'review' : 'memorizing');
-      
+
       setProgress(prev => ({
         ...prev,
         currentVerseIndex: currentVerseIndex + 1
@@ -135,7 +115,7 @@ export function MemorizationInterface({ verses, surahId, surahName }: Memorizati
   if (!currentVerse) {
     return (
       <div className="flex items-center justify-center py-12">
-        {/* <LoadingSpinner size={32} /> */}
+        <LoadingSpinner size={32} />
       </div>
     );
   }
@@ -147,29 +127,20 @@ export function MemorizationInterface({ verses, surahId, surahName }: Memorizati
       {/* Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="max-w-4xl mx-auto p-4">
-          <h1 className="text-2xl font-bold text-gray-900">{surahName}</h1>
-          <p className="text-gray-600">Verse {currentVerse.verse_number}</p>
+          <h1 className="text-2xl font-bold text-gray-900">{`Surah ${surahName}`}</h1>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="py-8">
-        {viewMode === 'memorizing' && !isVerseCompleted && (
-          <WordGuessGame
-            words={currentVerse.words}
-            currentWordIndex={currentWordIndex}
-            onWordComplete={handleWordComplete}
-            onAllWordsComplete={handleAllWordsComplete}
-          />
-        )}
-
-        {(viewMode === 'completed' || viewMode === 'review' || isVerseCompleted) && (
-          <VerseDisplay
-            verse={currentVerse}
-            isCompleted={isVerseCompleted}
-            onContinue={viewMode === 'completed' ? handleContinueToNext : undefined}
-          />
-        )}
+        <WordGuess
+          currentVerse={currentVerse}
+          isVerseCompleted={isVerseCompleted}
+          currentWordIndex={currentWordIndex}
+          viewMode={viewMode}
+          onWordComplete={handleWordComplete}
+          onNext={handleNext}
+        />
       </div>
 
       {/* Navigation */}
@@ -180,7 +151,7 @@ export function MemorizationInterface({ verses, surahId, surahName }: Memorizati
         onNext={handleNext}
         onReset={handleReset}
         canGoPrevious={currentVerseIndex > 0}
-        canGoNext={currentVerseIndex < totalVerses - 1}
+        canGoNext={isVerseCompleted && (currentVerseIndex < totalVerses - 1)}
       />
     </div>
   );

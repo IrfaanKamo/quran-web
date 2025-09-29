@@ -92,6 +92,9 @@ export interface WordsResponse {
 }
 
 // App-specific types
+
+export type VerseViewMode = 'memorizing' | 'completed' | 'review';
+
 export interface WordGuessState {
     currentWordIndex: number;
     selectedOption: number | null;
