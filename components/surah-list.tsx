@@ -7,6 +7,7 @@ import { getChapters } from '@/lib/quran-api';
 // import { ErrorBoundary } from './ui/error-boundary';
 import Link from 'next/link';
 import { BookOpen, MapPin } from 'lucide-react';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
 
 export function SurahList() {
   const [surahs, setSurahs] = useState<Surah[]>([]);
@@ -53,7 +54,7 @@ export function SurahList() {
   }
 
   return (
-    // <ErrorBoundary>
+    <ErrorBoundary>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
         {surahs.map((surah) => (
           <Link
@@ -86,6 +87,6 @@ export function SurahList() {
           </Link>
         ))}
       </div>
-    // </ErrorBoundary>
+    </ErrorBoundary>
   );
 }

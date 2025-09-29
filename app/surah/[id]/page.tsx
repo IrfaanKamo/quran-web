@@ -1,7 +1,7 @@
 import { getChapter, getVerses } from '@/lib/quran-api';
-// import { ErrorBoundary } from '@/components/ui/error-boundary';
 import { notFound } from 'next/navigation';
 import { MemorizationInterface } from '@/components/memorization-interface';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -29,13 +29,13 @@ export default async function SurahPage({ params }: PageProps) {
     }
 
     return (
-      // <ErrorBoundary>
+      <ErrorBoundary>
         <MemorizationInterface
           verses={verses}
           surahId={surahId}
           surahName={chapter.name_simple}
         />
-      // </ErrorBoundary>
+      </ErrorBoundary>
     );
   } catch (error) {
     console.error('Error loading Surah:', error);
