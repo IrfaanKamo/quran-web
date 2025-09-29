@@ -28,12 +28,14 @@ export default function Home() {
               <h3 className="text-2xl font-bold">QuranMind</h3>
             </div>
             <p className="text-gray-400 mb-6 max-w-2xl mx-auto">
-              A modern web application designed to help Muslims memorize and understand the Holy Quran
-              through interactive learnings. Built with love for the Muslim ummah worldwide.
+              A modern web application designed to help Muslims memorize and understand
+              the Holy Quran through interactive learnings. Built with love for the Muslim
+              ummah worldwide.
             </p>
             <div className="text-sm text-gray-500 space-y-2">
               <p className="italic">
-                "And We have certainly made the Quran easy for remembrance, so is there any who will remember?"
+                "And We have certainly made the Quran easy for remembrance, so is there
+                any who will remember?"
               </p>
               <p className="text-xs">- Quran 54:17</p>
             </div>

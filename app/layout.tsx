@@ -1,26 +1,22 @@
-import './globals.css';
-import type { Metadata } from 'next';
-import { Inter, Amiri } from 'next/font/google';
-import { cn } from '@/lib/utils';
-import { BookOpen } from 'lucide-react';
+import "./globals.css";
+import type { Metadata } from "next";
+import { Inter, Amiri } from "next/font/google";
+import { cn } from "@/lib/utils";
+import { BookOpen } from "lucide-react";
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const amiri = Amiri({
-  subsets: ['arabic'],
-  weight: ['400', '700'],
-  variable: '--font-amiri'
+  subsets: ["arabic"],
+  weight: ["400", "700"],
+  variable: "--font-amiri",
 });
 
 export const metadata: Metadata = {
-  title: 'QuranMind - Memorize & Understand the Quran',
-  description: 'A modern web app to help Muslims memorize and understand the Holy Quran',
+  title: "QuranMind - Memorize & Understand the Quran",
+  description: "A modern web app to help Muslims memorize and understand the Holy Quran",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={cn(inter.variable, amiri.variable)}>
       <body className={inter.className}>

@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Surah } from '@/types/quran';
-import { getChapters } from '@/lib/quran-api';
+import { useState, useEffect } from "react";
+import { Surah } from "@/types/quran";
+import { getChapters } from "@/lib/quran-api";
 // import { LoadingSpinner } from './ui/loading-spinner';
 // import { ErrorBoundary } from './ui/error-boundary';
-import Link from 'next/link';
-import { BookOpen, MapPin } from 'lucide-react';
-import { ErrorBoundary } from '@/components/ui/error-boundary';
+import Link from "next/link";
+import { BookOpen, MapPin } from "lucide-react";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 export function SurahList() {
   const [surahs, setSurahs] = useState<Surah[]>([]);
@@ -21,7 +21,7 @@ export function SurahList() {
         const response = await getChapters();
         setSurahs(response.chapters);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load chapters');
+        setError(err instanceof Error ? err.message : "Failed to load chapters");
       } finally {
         setLoading(false);
       }
@@ -73,7 +73,7 @@ export function SurahList() {
                 {surah.name_arabic}
               </div>
             </div>
-            
+
             <div className="flex items-center justify-between text-sm text-gray-500">
               <div className="flex items-center">
                 <BookOpen size={16} className="mr-1" />

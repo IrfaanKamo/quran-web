@@ -51,8 +51,8 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.623 0.1688 149.18);
-    --primary-foreground: oklch(0.9848 0 0);
+  --primary: oklch(0.623 0.1688 149.18);
+  --primary-foreground: oklch(0.9848 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
@@ -85,8 +85,8 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.623 0.1688 149.18);
-    --primary-foreground: oklch(0.9848 0 0);
+  --primary: oklch(0.623 0.1688 149.18);
+  --primary-foreground: oklch(0.9848 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
@@ -123,10 +123,10 @@
 
 /* Custom styles for Arabic text */
 .font-arabic {
-  font-family: 'Noto Naskh Arabic', 'Amiri', 'Traditional Arabic', serif;
+  font-family: "Noto Naskh Arabic", "Amiri", "Traditional Arabic", serif;
   direction: rtl;
   text-align: right;
-    line-height: 2;
+  line-height: 2;
 }
 
 /* Custom scrollbar */
@@ -169,7 +169,8 @@
 
 /* Loading animation */
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -191,15 +192,28 @@
 }
 
 @keyframes successPulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 @keyframes errorShake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-5px); }
-  75% { transform: translateX(5px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
 }
 
 /* Progress bar animation */

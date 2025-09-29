@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { ChevronLeft, ChevronRight, Home, RotateCcw } from 'lucide-react';
-import Link from 'next/link';
+import { ChevronLeft, ChevronRight, Home, RotateCcw } from "lucide-react";
+import Link from "next/link";
 
 interface NavigationControlsProps {
   currentVerseIndex: number;
@@ -70,11 +70,9 @@ export function NavigationControls({
 
         {/* Right Progress Indicator */}
         <div className="text-right">
-          <div className="text-xs text-gray-500">
-            Surah Progress
-          </div>
+          <div className="text-xs text-gray-500">Surah Progress</div>
           <div className="text-sm font-medium text-gray-700">
-            {Math.round(((currentVerseIndex) / totalVerses) * 100)}%
+            {Math.round((currentVerseIndex / totalVerses) * 100)}%
           </div>
         </div>
       </div>

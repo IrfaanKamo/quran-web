@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { Verse, SurahProgress, VerseProgress, VerseViewMode } from '@/types/quran';
-import { NavigationControls } from './navigation-controls';
-import { LoadingSpinner } from './ui/loading-spinner';
-import { VerseCompletionGame } from './verse-completion-game';
+import { useState, useEffect } from "react";
+import { Verse, SurahProgress, VerseProgress, VerseViewMode } from "@/types/quran";
+import { NavigationControls } from "./navigation-controls";
+import { LoadingSpinner } from "./ui/loading-spinner";
+import { VerseCompletionGame } from "./verse-completion-game";
 
 interface MemorizationInterfaceProps {
   verses: Verse[];
@@ -12,15 +12,19 @@ interface MemorizationInterfaceProps {
   surahName: string;
 }
 
-export function MemorizationInterface({ verses, surahId, surahName }: MemorizationInterfaceProps) {
+export function MemorizationInterface({
+  verses,
+  surahId,
+  surahName,
+}: MemorizationInterfaceProps) {
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
-  const [viewMode, setViewMode] = useState<VerseViewMode>('memorizing');
+  const [viewMode, setViewMode] = useState<VerseViewMode>("memorizing");
   const [progress, setProgress] = useState<SurahProgress>({
     surahId,
     currentVerseIndex: 0,
     completedVerses: [],
-    verseProgresses: {}
+    verseProgresses: {},
   });
 
   // Load progress from localStorage
@@ -53,21 +57,24 @@ export function MemorizationInterface({ verses, surahId, surahName }: Memorizati
       totalWords: verse.words.length,
     };
 
-    setProgress(prev => ({
+    setProgress((prev) => ({
       ...prev,
       verseProgresses: {
         ...prev.verseProgresses,
-        [currentVerseIndex]: verseProgress
-      }
+        [currentVerseIndex]: verseProgress,
+      },
     }));
 
     if (nextWordIndex >= verse.words.length) {
       // Verse completed
-      setProgress(prev => ({
+      setProgress((prev) => ({
         ...prev,
-        completedVerses: [...prev.completedVerses.filter(v => v !== currentVerseIndex), currentVerseIndex]
+        completedVerses: [
+          ...prev.completedVerses.filter((v) => v !== currentVerseIndex),
+          currentVerseIndex,
+        ],
       }));
-      setViewMode('completed');
+      setViewMode("completed");
     } else {
       setCurrentWordIndex(nextWordIndex);
     }
@@ -77,42 +84,43 @@ export function MemorizationInterface({ verses, surahId, surahName }: Memorizati
     if (currentVerseIndex > 0) {
       setCurrentVerseIndex(currentVerseIndex - 1);
       setCurrentWordIndex(0);
-      setViewMode('review');
+      setViewMode("review");
     }
   };
 
   const handleNext = () => {
     if (currentVerseIndex < totalVerses - 1) {
       setCurrentVerseIndex(currentVerseIndex + 1);
-      
+
       const isCompleted = progress.completedVerses.includes(currentVerseIndex + 1);
-      if(isCompleted) {
-        setViewMode('review');
+      if (isCompleted) {
+        setViewMode("review");
         setCurrentWordIndex(0);
-      }
-      else {
-        setViewMode('memorizing');
-        setCurrentWordIndex(progress.verseProgresses[currentVerseIndex + 1]?.currentWordIndex || 0);
+      } else {
+        setViewMode("memorizing");
+        setCurrentWordIndex(
+          progress.verseProgresses[currentVerseIndex + 1]?.currentWordIndex || 0
+        );
       }
 
-      setProgress(prev => ({
+      setProgress((prev) => ({
         ...prev,
-        currentVerseIndex: currentVerseIndex + 1
+        currentVerseIndex: currentVerseIndex + 1,
       }));
     }
   };
 
   const handleReset = () => {
-    if (confirm('Are you sure you want to reset all progress for this Surah?')) {
+    if (confirm("Are you sure you want to reset all progress for this Surah?")) {
       setProgress({
         surahId,
         currentVerseIndex: 0,
         completedVerses: [],
-        verseProgresses: {}
+        verseProgresses: {},
       });
       setCurrentVerseIndex(0);
       setCurrentWordIndex(0);
-      setViewMode('memorizing');
+      setViewMode("memorizing");
       localStorage.removeItem(`surah_${surahId}_progress`);
     }
   };
@@ -156,7 +164,7 @@ export function MemorizationInterface({ verses, surahId, surahName }: Memorizati
         onNext={handleNext}
         onReset={handleReset}
         canGoPrevious={currentVerseIndex > 0}
-        canGoNext={isVerseCompleted && (currentVerseIndex < totalVerses - 1)}
+        canGoNext={isVerseCompleted && currentVerseIndex < totalVerses - 1}
       />
     </div>
   );

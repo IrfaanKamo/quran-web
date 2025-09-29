@@ -1,7 +1,7 @@
-import { getChapter, getVerses } from '@/lib/quran-api';
-import { notFound } from 'next/navigation';
-import { MemorizationInterface } from '@/components/memorization-interface';
-import { ErrorBoundary } from '@/components/ui/error-boundary';
+import { getChapter, getVerses } from "@/lib/quran-api";
+import { notFound } from "next/navigation";
+import { MemorizationInterface } from "@/components/memorization-interface";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -18,14 +18,14 @@ export default async function SurahPage({ params }: PageProps) {
   try {
     const [chapterResponse, versesResponse] = await Promise.all([
       getChapter(surahId),
-      getVerses(surahId)
+      getVerses(surahId),
     ]);
 
     const chapter = chapterResponse.chapter;
     const verses = versesResponse.verses;
 
     if (!verses || verses.length === 0) {
-      throw new Error('No verses found for this Surah');
+      throw new Error("No verses found for this Surah");
     }
 
     return (
@@ -38,14 +38,14 @@ export default async function SurahPage({ params }: PageProps) {
       </ErrorBoundary>
     );
   } catch (error) {
-    console.error('Error loading Surah:', error);
+    console.error("Error loading Surah:", error);
 
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Error Loading Surah</h1>
           <p className="text-gray-600 mb-4">
-            {error instanceof Error ? error.message : 'Failed to load Surah data'}
+            {error instanceof Error ? error.message : "Failed to load Surah data"}
           </p>
           <a
             href="/"
