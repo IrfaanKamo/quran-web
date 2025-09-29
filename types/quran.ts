@@ -109,7 +109,6 @@ export interface VerseProgress {
     isCompleted: boolean;
     currentWordIndex: number;
     totalWords: number;
-    mistakes: number;
 }
 
 export interface SurahProgress {

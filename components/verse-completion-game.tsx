@@ -1,25 +1,79 @@
 'use client';
 
-import { Verse, VerseViewMode, Word } from "@/types/quran";
+import { Verse, VerseViewMode, Word, WordGuessState } from "@/types/quran";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Progress } from "./ui/progress";
-import { StepForward } from "lucide-react";
+import { CheckCircle, StepForward, XCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { generateWordOptions } from "@/lib/quran-api";
 
-interface WordGuessProps {
+interface VerseCompletionGameProps {
     currentVerse: Verse;
     isVerseCompleted: boolean;
     currentWordIndex: number;
     viewMode: VerseViewMode;
-    onWordComplete: (isCorrect: boolean) => void;
+    onWordComplete: () => void;
     onNext: () => void;
 };
 
-export function WordGuess({ currentVerse, isVerseCompleted, currentWordIndex, viewMode, onWordComplete, onNext }: WordGuessProps) {
+export function VerseCompletionGame({ currentVerse, isVerseCompleted, currentWordIndex, viewMode, onWordComplete, onNext }: VerseCompletionGameProps) {
     const words: Word[] = currentVerse.words;
     const verseProgress = ((currentWordIndex) / words.length) * 100;
     const completedWords = words.slice(0, currentWordIndex);
+
+    const [guessState, setGuessState] = useState<WordGuessState | null>(null);
+
+    useEffect(() => {
+        if (currentWordIndex < words.length) {
+            const correctWord = words[currentWordIndex];
+            const options = generateWordOptions(correctWord, words);
+
+            setGuessState({
+                currentWordIndex,
+                selectedOption: null,
+                isCorrect: null,
+                showResult: false,
+                options,
+                correctWord
+            });
+        }
+    }, [currentWordIndex, words]);
+
+    const handleOptionClick = (optionIndex: number) => {
+        if (!guessState || guessState.showResult) return;
+
+        const selectedWord = guessState.options[optionIndex];
+        const isCorrect = selectedWord.id === guessState.correctWord.id;
+
+        setGuessState(prev => ({
+            ...prev!,
+            selectedOption: optionIndex,
+            isCorrect,
+            showResult: true
+        }));
+
+        // Auto-advance after showing correct result
+        setTimeout(() => {
+            if (isCorrect) {
+                onWordComplete();
+            }
+            else {
+                setGuessState(prev => ({
+                    ...prev!,
+                    selectedOption: null,
+                    showResult: false,
+                    isCorrect: null
+                }));
+            }
+        }, 600);
+    };
+
+    if (!guessState || currentWordIndex >= words.length) {
+        return null;
+    }
+
 
     return (
         <div className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -91,18 +145,54 @@ export function WordGuess({ currentVerse, isVerseCompleted, currentWordIndex, vi
                                     </CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                                        {[...words].sort(() => Math.random() - 0.5).map((word, index) => (
-                                            <Button
-                                                key={index}
-                                                variant={completedWords.includes(word) ? "default" : "outline"}
-                                                className="font-arabic text-2xl h-14"
-                                                onClick={() => onWordComplete(false)}
-                                                disabled={completedWords.includes(word)}
-                                            >
-                                                {word.text_uthmani}
-                                            </Button>
-                                        ))}
+                                    <div className="grid grid-cols-2 gap-4 mb-6">
+                                        {guessState.options.map((option, index) => {
+                                            const isSelected = guessState.selectedOption === index;
+                                            const isCorrectOption = option.id === guessState.correctWord.id;
+
+                                            let buttonClass = 'p-4 text-lg font-arabic border-2 rounded-lg transition-all duration-200 ';
+
+                                            if (!guessState.showResult) {
+                                                buttonClass += isSelected
+                                                    ? 'border-blue-600 bg-blue-50 text-blue-800'
+                                                    : 'border-gray-300 bg-white hover:border-blue-300 hover:bg-blue-50';
+                                            } else {
+                                                if (isSelected) {
+                                                    if (isCorrectOption) {
+                                                        buttonClass += 'border-green-500 bg-green-50 text-green-800';
+                                                    }
+                                                    else {
+                                                        buttonClass += 'border-red-500 bg-red-50 text-red-800';
+                                                    }
+                                                } else {
+                                                    buttonClass += 'border-gray-300 bg-gray-50 text-gray-600';
+                                                }
+                                            }
+
+                                            return (
+                                                <button
+                                                    key={option.id}
+                                                    onClick={() => handleOptionClick(index)}
+                                                    disabled={guessState.showResult}
+                                                    className={buttonClass}
+                                                >
+                                                    <div className="flex items-center justify-center">
+                                                        {guessState.showResult && (
+                                                            <div className="mr-2">
+                                                                {
+                                                                    isSelected ?
+                                                                        isCorrectOption ?
+                                                                            (<CheckCircle className="text-green-500 ml-2" size={20} />) :
+                                                                            (<XCircle className="text-red-500 ml-2" size={20} />)
+                                                                        : null
+                                                                }
+                                                            </div>
+                                                        )}
+                                                        <span>{option.text_uthmani}</span>
+                                                    </div>
+                                                </button>
+                                            );
+                                        })}
                                     </div>
                                 </CardContent>
                             </Card>

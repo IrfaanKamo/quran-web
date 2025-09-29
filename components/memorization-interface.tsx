@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { Verse, SurahProgress, VerseProgress, VerseViewMode } from '@/types/quran';
 import { NavigationControls } from './navigation-controls';
 import { LoadingSpinner } from './ui/loading-spinner';
-import { WordGuess } from './word-guess';
+import { VerseCompletionGame } from './verse-completion-game';
 
 interface MemorizationInterfaceProps {
   verses: Verse[];
@@ -41,7 +41,7 @@ export function MemorizationInterface({ verses, surahId, surahName }: Memorizati
   const currentVerse = verses[currentVerseIndex];
   const totalVerses = verses.length;
 
-  const handleWordComplete = (isCorrect: boolean) => {
+  const handleWordComplete = () => {
     const verse = verses[currentVerseIndex];
     const nextWordIndex = currentWordIndex + 1;
 
@@ -51,7 +51,6 @@ export function MemorizationInterface({ verses, surahId, surahName }: Memorizati
       isCompleted: nextWordIndex >= verse.words.length,
       currentWordIndex: nextWordIndex,
       totalWords: verse.words.length,
-      mistakes: (progress.verseProgresses[currentVerseIndex]?.mistakes || 0) + (isCorrect ? 0 : 1)
     };
 
     setProgress(prev => ({
@@ -85,10 +84,16 @@ export function MemorizationInterface({ verses, surahId, surahName }: Memorizati
   const handleNext = () => {
     if (currentVerseIndex < totalVerses - 1) {
       setCurrentVerseIndex(currentVerseIndex + 1);
-      setCurrentWordIndex(0);
-
+      
       const isCompleted = progress.completedVerses.includes(currentVerseIndex + 1);
-      setViewMode(isCompleted ? 'review' : 'memorizing');
+      if(isCompleted) {
+        setViewMode('review');
+        setCurrentWordIndex(0);
+      }
+      else {
+        setViewMode('memorizing');
+        setCurrentWordIndex(progress.verseProgresses[currentVerseIndex + 1]?.currentWordIndex || 0);
+      }
 
       setProgress(prev => ({
         ...prev,
@@ -133,7 +138,7 @@ export function MemorizationInterface({ verses, surahId, surahName }: Memorizati
 
       {/* Main Content */}
       <div className="py-8">
-        <WordGuess
+        <VerseCompletionGame
           currentVerse={currentVerse}
           isVerseCompleted={isVerseCompleted}
           currentWordIndex={currentWordIndex}
