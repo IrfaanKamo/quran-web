@@ -5,6 +5,7 @@ import { Verse, SurahProgress, VerseProgress, VerseViewMode } from "@/types/qura
 import { NavigationControls } from "./navigation-controls";
 import { LoadingSpinner } from "./ui/loading-spinner";
 import { VerseCompletionGame } from "./verse-completion-game";
+import { SurahCompletion } from "./surah-completion";
 
 interface MemorizationInterfaceProps {
   verses: Verse[];
@@ -134,7 +135,23 @@ export function MemorizationInterface({
   }
 
   const isVerseCompleted = progress.completedVerses.includes(currentVerseIndex);
+  const isSurahCompleted = progress.completedVerses.length === totalVerses;
 
+  // Show completion screen if Surah is completed
+  if (isSurahCompleted) {
+    return (
+      <div className="min-h-screen bg-gray-50 pb-20">
+        <SurahCompletion
+          surahName={surahName}
+          surahNumber={surahId}
+          totalAyahs={totalVerses}
+          onPlayAgain={handleReset}
+        />
+      </div>
+    );
+  }
+
+  // Show memorization interface
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
