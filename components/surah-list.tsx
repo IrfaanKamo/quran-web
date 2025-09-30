@@ -60,14 +60,23 @@ export function SurahList() {
           <Link
             key={surah.id}
             href={`/surah/${surah.id}`}
-            className="block p-6 bg-white rounded-lg border border-gray-200 hover:border-green-300 hover:shadow-md transition-all duration-200 group"
+            className="block p-4 bg-white rounded-lg border border-gray-200 hover:border-green-300 hover:shadow-md transition-all duration-200 group"
           >
             <div className="flex items-start justify-between mb-4">
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-green-500 transition-colors">
-                  {surah.id}. {surah.name_simple}
-                </h3>
-                <p className="text-gray-600 text-sm mt-1">{surah.translated_name.name}</p>
+              <div className="flex-1 flex items-center">
+                <div className="w-8 h-8 mr-4 bg-gray-100 border-0 border-gray-300 flex justify-center items-center transform rotate-45">
+                  <span className="transform -rotate-45 text-gray-900 text-sm font-semibold">
+                    {surah.id}
+                  </span>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-green-500 transition-colors">
+                    {surah.name_simple}
+                  </h3>
+                  <p className="text-gray-600 text-sm">
+                    {surah.translated_name.name}
+                  </p>
+                </div>
               </div>
               <div className="text-right text-2xl font-arabic text-gray-900 group-hover:text-green-500 transition-colors">
                 {surah.name_arabic}
