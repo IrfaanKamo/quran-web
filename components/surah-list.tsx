@@ -21,7 +21,7 @@ export function SurahList() {
         const response = await getChapters();
         setSurahs(response.chapters);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load chapters");
+        setError(err instanceof Error ? err.message : "Failed to load surahs");
       } finally {
         setLoading(false);
       }

@@ -13,7 +13,7 @@ export default function Home() {
       {/* Surah List */}
       <section className="max-w-6xl mx-auto pt-12 pb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
-          Select a Surah to Memorize
+          Select a simple Surah to test your memory
         </h2>
         <SurahList />
       </section>
