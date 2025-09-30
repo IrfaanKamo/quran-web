@@ -1,6 +1,6 @@
 import { ChapterResponse, ChaptersResponse, VersesResponse, Word } from "@/types/quran";
 
-const BASE_URL = "http://localhost:3001/quran-api";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const cache = new Map<string, any>();
 const MAX_VERSE_COUNT = 30; // Define a maximum verse count for filtering
 
@@ -10,7 +10,10 @@ async function fetchWithCache<T>(url: string): Promise<T> {
   }
 
   try {
-    const response = await fetch(url);
+    const response = await fetch(url, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" },
+    });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -27,7 +30,9 @@ export async function getChapters(): Promise<ChaptersResponse> {
   const response = await fetchWithCache<ChaptersResponse>(`${BASE_URL}/surahs`);
 
   const filterSimpleChapters: ChaptersResponse = {
-    chapters: response.chapters.filter((chapter) => chapter.verses_count <= MAX_VERSE_COUNT),
+    chapters: response.chapters.filter(
+      (chapter) => chapter.verses_count <= MAX_VERSE_COUNT
+    ),
   };
 
   return filterSimpleChapters;
