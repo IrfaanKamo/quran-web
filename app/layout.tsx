@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Inter, Amiri } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { BookOpen } from "lucide-react";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const amiri = Amiri({
@@ -12,8 +13,9 @@ const amiri = Amiri({
 });
 
 export const metadata: Metadata = {
-  title: "QuranMind - Memorize & Understand the Quran",
-  description: "A modern web app to help Muslims memorize and understand the Holy Quran",
+  title: "Taddabur - Memorize & Understand the Quran",
+  description:
+    "A modern web app to help the Ummah memorize and understand the Holy Quran",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -27,9 +29,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <div className="w-10 h-10 bg-gradient-to-r from-green-600 to-green-500 rounded-lg flex items-center justify-center">
                   <BookOpen className="h-6 w-6 text-white" />
                 </div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent">
-                  QuranMind
-                </h1>
+                <Link href="/">
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-green-500 bg-clip-text text-transparent">
+                    Taddabur
+                  </h1>
+                </Link>
               </div>
             </div>
           </div>
