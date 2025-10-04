@@ -3,11 +3,10 @@
 import { useState, useEffect } from "react";
 import { Surah } from "@/types/quran";
 import { getChapters } from "@/lib/quran-api";
-// import { LoadingSpinner } from './ui/loading-spinner';
-// import { ErrorBoundary } from './ui/error-boundary';
 import Link from "next/link";
 import { BookOpen, MapPin } from "lucide-react";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
+import Loading from "./loading";
 
 export function SurahList() {
   const [surahs, setSurahs] = useState<Surah[]>([]);
@@ -33,8 +32,7 @@ export function SurahList() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        {/* <LoadingSpinner size={32} /> */}
-        <span className="ml-2 text-gray-600">Loading Surahs...</span>
+        <Loading title="Surahs"/>
       </div>
     );
   }

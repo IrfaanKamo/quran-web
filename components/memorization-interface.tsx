@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import { Verse, SurahProgress, VerseProgress, VerseViewMode } from "@/types/quran";
 import { NavigationControls } from "./navigation-controls";
-import { LoadingSpinner } from "./ui/loading-spinner";
 import { VerseCompletionGame } from "./verse-completion-game";
 import { SurahCompletion } from "./surah-completion";
+import Loading from "./loading";
 
 interface MemorizationInterfaceProps {
   verses: Verse[];
@@ -129,7 +129,7 @@ export function MemorizationInterface({
   if (!currentVerse) {
     return (
       <div className="flex items-center justify-center py-12">
-        <LoadingSpinner size={32} />
+        <Loading title="Surah"/>
       </div>
     );
   }
