@@ -54,8 +54,9 @@ export function NavigationControls({
             <ChevronLeft size={20} />
           </button>
 
-          <div className="text-sm font-medium text-gray-600">
-            Ayah {currentVerseIndex + 1} of {totalVerses}
+          <div className="text-center text-sm font-medium text-gray-600 flex flex-col sm:flex-row">
+            <div className="sm:pr-1">Ayah</div>
+            <div>{currentVerseIndex + 1} of {totalVerses}</div>
           </div>
 
           <button

@@ -100,7 +100,7 @@ export function VerseCompletionGame({
             {/* Arabic Text */}
             <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8">
               <div className="text-center">
-                <div className="font-arabic text-4xl md:text-5xl text-gray-800 mb-6 min-h-[80px] flex items-center justify-center">
+                <div className="font-arabic text-3xl sm:text-4xl text-gray-800 mb-4 min-h-[80px] flex items-center justify-center">
                   {isVerseCompleted ? (
                     <div className="space-x-4 rtl:space-x-reverse text-green-700">
                       {currentVerse.text_uthmani}
@@ -123,7 +123,7 @@ export function VerseCompletionGame({
                 </div>
 
                 {/* Transliteration */}
-                <div className="text-base text-gray-400 mb-4">
+                <div className="text-sm sm:text-base text-gray-400 mb-4">
                   {completedWords
                     .map((word) => {
                       return word.transliteration?.text || "";
@@ -132,7 +132,7 @@ export function VerseCompletionGame({
                 </div>
 
                 {/* Translation */}
-                <p className="text-lg text-gray-700">
+                <p className="text-base sm:text-lg text-gray-700">
                   {currentVerse.translations![0].text}
                 </p>
               </div>
@@ -153,7 +153,7 @@ export function VerseCompletionGame({
                       const isCorrectOption = option.id === guessState.correctWord.id;
 
                       let buttonClass =
-                        "p-4 text-lg font-arabic border-2 rounded-lg transition-all duration-200 ";
+                        "p-4 text-xl font-arabic border-2 rounded-lg transition-all duration-200 ";
 
                       if (!guessState.showResult) {
                         buttonClass += isSelected
@@ -206,22 +206,22 @@ export function VerseCompletionGame({
             {/* Success Message */}
             {viewMode === "completed" && (
               <>
-                <div className="text-center p-6 bg-green-50 rounded-2xl border-2 border-green-200">
-                  <div className="text-2xl mb-2">🎉</div>
-                  <h3 className="text-lg font-semibold text-green-800 mb-2">
-                    MashAllah! Ayah completed correctly!
-                  </h3>
-                  <p className="text-green-600">
-                    You can now play the audio and move to the next ayah.
-                  </p>
+                <div className="text-center p-4 bg-green-50 rounded-2xl border-2 border-green-200">
+                  {/* <div className="text-2xl mb-2">🎉</div> */}
+                  <div className="text-lg font-semibold text-green-600 mb-1">
+                    🎉 MashAllah 🎉
+                  </div>
+                  <div className="text-green-600 mb-4">
+                    Ayah completed correctly!
+                  </div>
+                  <div className="flex flex-wrap justify-center items-center">
+                    <Button onClick={onNext} className="bg-green-600 hover:bg-green-700">
+                      Next Ayah
+                      <StepForward className="h-4 w-4 ml-1" />
+                    </Button>
+                  </div>
                 </div>
                 {/* Controls */}
-                <div className="flex flex-wrap justify-center items-center gap-4">
-                  <Button onClick={onNext} className="bg-green-600 hover:bg-green-700">
-                    Continue
-                    <StepForward className="h-4 w-4 ml-1" />
-                  </Button>
-                </div>
               </>
             )}
           </CardContent>

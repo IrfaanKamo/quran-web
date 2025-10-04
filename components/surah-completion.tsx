@@ -33,6 +33,13 @@ export function SurahCompletion({
   const [showAnimation, setShowAnimation] = useState(false);
 
   useEffect(() => {
+    // scroll to top of screen to show completion message
+    window.scrollTo({
+      top: 0,
+      left: 0,
+      behavior: "smooth",
+    });
+
     const timer = setTimeout(() => setShowAnimation(true), 300);
     return () => clearTimeout(timer);
   }, []);
@@ -68,7 +75,7 @@ export function SurahCompletion({
               </div>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-gray-800 mb-2">
-              🎉 Surah Completed! 🎉
+              Surah Completed!
             </h1>
             <p className="text-xl text-gray-600">
               MashAllah! You have successfully completed
@@ -161,7 +168,7 @@ export function SurahCompletion({
           <Link href="/" title="Back to Surah List">
             <Button
               size="lg"
-              className="bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg font-semibold shadow-lg hover:shadow-xl transform transition-all hover:scale-105 active:scale-95"
+              className="w-full bg-green-600 hover:bg-green-700 text-white px-8 py-3 text-lg font-semibold shadow-lg hover:shadow-xl transform transition-all hover:scale-105 active:scale-95"
             >
               <BookOpen className="w-5 h-5 mr-2" />
               Return to Surah List
