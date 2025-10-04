@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Surah } from "@/types/quran";
+import { Surah, SurahProgress } from "@/types/quran";
 import { getChapters } from "@/lib/quran-api";
 import Link from "next/link";
-import { BookOpen, MapPin } from "lucide-react";
+import { BadgeCheckIcon, BookOpen, MapPin } from "lucide-react";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import Loading from "./loading";
+import { Badge } from "./ui/badge";
 
 export function SurahList() {
   const [surahs, setSurahs] = useState<Surah[]>([]);
@@ -32,7 +33,7 @@ export function SurahList() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loading title="Surahs"/>
+        <Loading title="Surahs" />
       </div>
     );
   }
@@ -54,45 +55,61 @@ export function SurahList() {
   return (
     <ErrorBoundary>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-        {surahs.map((surah) => (
-          <Link
-            key={surah.id}
-            href={`/surah/${surah.id}`}
-            className="block p-4 bg-white rounded-lg border border-gray-200 hover:border-green-300 hover:shadow-md transition-all duration-200 group"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div className="flex-1 flex items-center">
-                <div className="w-8 h-8 mr-4 bg-gray-100 border-0 border-gray-300 flex justify-center items-center transform rotate-45">
-                  <span className="transform -rotate-45 text-gray-900 text-sm font-semibold">
-                    {surah.id}
-                  </span>
-                </div>
-                <div>
-                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-green-500 transition-colors">
-                    {surah.name_simple}
-                  </h3>
-                  <p className="text-gray-600 text-sm">
-                    {surah.translated_name.name}
-                  </p>
-                </div>
-              </div>
-              <div className="text-right text-2xl font-arabic text-gray-900 group-hover:text-green-500 transition-colors">
-                {surah.name_arabic}
-              </div>
-            </div>
+        {surahs.map((surah) => {
+          //Fetch progress from localStorage and check if completed
+          const surahProgress = localStorage.getItem(`surah_${surah.id}_progress`);
+          let isSurahCompleted = false;
+          if (surahProgress) {
+            const parsed: SurahProgress = JSON.parse(surahProgress);
+            isSurahCompleted = parsed.completedVerses.length === surah.verses_count;
+          }
 
-            <div className="flex items-center justify-between text-sm text-gray-500">
-              <div className="flex items-center">
-                <BookOpen size={16} className="mr-1" />
-                <span>{surah.verses_count} verses</span>
+          return (
+            <Link
+              key={surah.id}
+              href={`/surah/${surah.id}`}
+              className="block p-4 bg-white rounded-lg border border-gray-200 hover:border-green-300 hover:shadow-md transition-all duration-200 group"
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className="flex-1 flex items-center">
+                  <div className="w-8 h-8 mr-4 bg-gray-100 border-0 border-gray-300 flex justify-center items-center transform rotate-45">
+                    <span className="transform -rotate-45 text-gray-900 text-sm font-semibold">
+                      {surah.id}
+                    </span>
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-green-500 transition-colors">
+                      {surah.name_simple}
+                    </h3>
+                    <p className="text-gray-600 text-sm">{surah.translated_name.name}</p>
+                  </div>
+                </div>
+                <div className="text-right text-2xl font-arabic text-gray-900 group-hover:text-green-500 transition-colors">
+                  {surah.name_arabic}
+                </div>
               </div>
-              <div className="flex items-center">
-                <MapPin size={16} className="mr-1" />
-                <span className="capitalize">{surah.revelation_place}</span>
+
+              <div className="flex items-center justify-between text-sm text-gray-500">
+                <div className="flex items-center">
+                  <BookOpen size={16} className="mr-1" />
+                  <span>{surah.verses_count} verses</span>
+                </div>
+                {isSurahCompleted && (
+                  <div className="flex">
+                    <Badge variant="outline" className="bg-white text-green-500 ml-auto">
+                      <BadgeCheckIcon />
+                      Completed
+                    </Badge>
+                  </div>
+                )}
+                <div className="flex items-center">
+                  <MapPin size={16} className="mr-1" />
+                  <span className="capitalize">{surah.revelation_place}</span>
+                </div>
               </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
     </ErrorBoundary>
   );
