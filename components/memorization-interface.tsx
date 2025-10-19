@@ -6,6 +6,9 @@ import { NavigationControls } from "./navigation-controls";
 import { VerseCompletionGame } from "./verse-completion-game";
 import { SurahCompletion } from "./surah-completion";
 import Loading from "./loading";
+import { clearSurahProgress, loadSurahProgress, saveSurahProgress } from "@/lib/gameplay";
+import { useGameplayStore } from "@/store/useGameplayStore";
+import { StreakCounter } from "./streak-counter";
 
 interface MemorizationInterfaceProps {
   verses: Verse[];
@@ -30,18 +33,21 @@ export function MemorizationInterface({
 
   // Load progress from localStorage
   useEffect(() => {
-    const savedProgress = localStorage.getItem(`surah_${surahId}_progress`);
+    const savedProgress = loadSurahProgress(surahId);
     if (savedProgress) {
-      const parsed = JSON.parse(savedProgress);
-      setProgress(parsed);
-      setCurrentVerseIndex(parsed.currentVerseIndex || 0);
+      setProgress(savedProgress);
+      setCurrentVerseIndex(savedProgress.currentVerseIndex || 0);
     }
   }, [surahId]);
 
   // Save progress to localStorage
   useEffect(() => {
-    localStorage.setItem(`surah_${surahId}_progress`, JSON.stringify(progress));
+    saveSurahProgress(surahId, progress);
   }, [progress, surahId]);
+
+  const { current, best } = useGameplayStore(
+    (state) => state.streak
+  );
 
   const currentVerse = verses[currentVerseIndex];
   const totalVerses = verses.length;
@@ -122,14 +128,14 @@ export function MemorizationInterface({
       setCurrentVerseIndex(0);
       setCurrentWordIndex(0);
       setViewMode("memorizing");
-      localStorage.removeItem(`surah_${surahId}_progress`);
+      clearSurahProgress(surahId);
     }
   };
 
   if (!currentVerse) {
     return (
       <div className="flex items-center justify-center py-12">
-        <Loading title="Surah"/>
+        <Loading title="Surah" />
       </div>
     );
   }
@@ -156,8 +162,9 @@ export function MemorizationInterface({
     <div className="min-h-screen bg-gray-50 pb-20">
       {/* Header */}
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto p-4">
+        <div className="flex justify-between max-w-4xl mx-auto p-4">
           <h1 className="text-2xl font-bold text-gray-900">{`Surah ${surahName}`}</h1>
+          <StreakCounter currentStreak={current} bestStreak={best} />
         </div>
       </div>
 

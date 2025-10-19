@@ -8,6 +8,7 @@ import { Progress } from "./ui/progress";
 import { CheckCircle, StepForward, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { generateWordOptions } from "@/lib/quran-api";
+import { useGameplayStore } from "@/store/useGameplayStore";
 
 interface VerseCompletionGameProps {
   currentVerse: Verse;
@@ -32,6 +33,9 @@ export function VerseCompletionGame({
 
   const [guessState, setGuessState] = useState<WordGuessState | null>(null);
 
+  const incrementStreak = useGameplayStore((state) => state.increment);
+  const resetStreak = useGameplayStore((state) => state.reset);
+
   useEffect(() => {
     if (currentWordIndex < words.length) {
       const correctWord = words[currentWordIndex];
@@ -53,6 +57,12 @@ export function VerseCompletionGame({
 
     const selectedWord = guessState.options[optionIndex];
     const isCorrect = selectedWord.id === guessState.correctWord.id;
+
+    if (isCorrect) {
+      incrementStreak();
+    } else {
+      resetStreak();
+    }
 
     setGuessState((prev) => ({
       ...prev!,
@@ -96,7 +106,7 @@ export function VerseCompletionGame({
             </div>
             <Progress value={verseProgress} className="h-2" />
           </CardHeader>
-          <CardContent className="space-y-8">
+          <CardContent className="space-y-1">
             {/* Arabic Text */}
             <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8">
               <div className="text-center">
@@ -211,9 +221,7 @@ export function VerseCompletionGame({
                   <div className="text-lg font-semibold text-green-600 mb-1">
                     🎉 MashAllah 🎉
                   </div>
-                  <div className="text-green-600 mb-4">
-                    Ayah completed correctly!
-                  </div>
+                  <div className="text-green-600 mb-4">Ayah completed correctly!</div>
                   <div className="flex flex-wrap justify-center items-center">
                     <Button onClick={onNext} className="bg-green-600 hover:bg-green-700">
                       Next Ayah
