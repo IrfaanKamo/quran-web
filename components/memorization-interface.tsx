@@ -58,7 +58,6 @@ export function MemorizationInterface({
 
     // Update verse progress
     const verseProgress: VerseProgress = {
-      verseNumber: verse.verse_number,
       isCompleted: nextWordIndex >= verse.words.length,
       currentWordIndex: nextWordIndex,
       totalWords: verse.words.length,

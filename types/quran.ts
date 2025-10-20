@@ -105,7 +105,6 @@ export interface WordGuessState {
 }
 
 export interface VerseProgress {
-  verseNumber: number;
   isCompleted: boolean;
   currentWordIndex: number;
   totalWords: number;
