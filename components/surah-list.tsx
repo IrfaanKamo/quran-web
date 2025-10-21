@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Surah, SurahProgress } from "@/types/quran";
+import { Surah } from "@/types/quran";
 import { getChapters } from "@/lib/quran-api";
 import Link from "next/link";
 import { BadgeCheckIcon, BookOpen, MapPin } from "lucide-react";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
 import Loading from "./loading";
 import { Badge } from "./ui/badge";
+import { QuranProgress } from "@/types/gameplay";
 
 export function SurahList() {
   const [surahs, setSurahs] = useState<Surah[]>([]);
@@ -57,11 +58,13 @@ export function SurahList() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
         {surahs.map((surah) => {
           //Fetch progress from localStorage and check if completed
-          const surahProgress = localStorage.getItem(`surah_${surah.id}_progress`);
+          const quranProgress = localStorage.getItem(`quran_progress`);
           let isSurahCompleted = false;
-          if (surahProgress) {
-            const parsed: SurahProgress = JSON.parse(surahProgress);
-            isSurahCompleted = parsed.completedVerses.length === surah.verses_count;
+          if (quranProgress) {
+            const parsed: QuranProgress = JSON.parse(quranProgress);
+            isSurahCompleted =
+              parsed.surahProgresses[surah.id]?.completedVerses.length ===
+              surah.verses_count;
           }
 
           return (

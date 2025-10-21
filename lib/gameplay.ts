@@ -1,5 +1,4 @@
-import { GameState, Streak } from "@/types/gameplay";
-import { SurahProgress } from "@/types/quran";
+import { GameState, QuranProgress, SurahProgress } from "@/types/gameplay";
 
 // Surah Progress
 export function loadSurahProgress(surahId: number): SurahProgress | null {
@@ -13,6 +12,20 @@ export function saveSurahProgress(surahId: number, progress: SurahProgress) {
 
 export function clearSurahProgress(surahId: number) {
   localStorage.removeItem(`surah_${surahId}_progress`);
+}
+
+// Quran Progress
+export function loadQuranProgress(): QuranProgress | null {
+  const savedProgress = localStorage.getItem(`quran_progress`);
+  return savedProgress ? JSON.parse(savedProgress) : null;
+}
+
+export function saveQuranProgress(progress: QuranProgress) {
+  localStorage.setItem(`quran_progress`, JSON.stringify(progress));
+}
+
+export function clearQuranProgress() {
+  localStorage.removeItem(`quran_progress`);
 }
 
 // Game State

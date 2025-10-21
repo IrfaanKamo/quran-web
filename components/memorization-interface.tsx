@@ -1,14 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Verse, SurahProgress, VerseProgress, VerseViewMode } from "@/types/quran";
+import { Verse, VerseViewMode } from "@/types/quran";
 import { NavigationControls } from "./navigation-controls";
 import { VerseCompletionGame } from "./verse-completion-game";
 import { SurahCompletion } from "./surah-completion";
 import Loading from "./loading";
-import { clearSurahProgress, loadSurahProgress, saveSurahProgress } from "@/lib/gameplay";
+import { loadQuranProgress, saveQuranProgress } from "@/lib/gameplay";
 import { useGameplayStore } from "@/store/useGameplayStore";
 import { StreakCounter } from "./streak-counter";
+import { useQuranProgressStore } from "@/store/useQuranProgressStore";
+import { SurahProgress, VerseProgress } from "@/types/gameplay";
 
 interface MemorizationInterfaceProps {
   verses: Verse[];
@@ -24,30 +26,49 @@ export function MemorizationInterface({
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [viewMode, setViewMode] = useState<VerseViewMode>("memorizing");
-  const [progress, setProgress] = useState<SurahProgress>({
-    surahId,
-    currentVerseIndex: 0,
-    completedVerses: [],
-    verseProgresses: {},
-  });
+
+  const { current, best } = useGameplayStore((state) => state.streak);
+  const {
+    surahProgresses,
+    syncQuranProgress,
+    updateVerseProgress,
+    initialiseSurahProgress,
+    markVerseCompleted,
+    moveToNextVerse,
+  } = useQuranProgressStore((state) => state);
 
   // Load progress from localStorage
   useEffect(() => {
-    const savedProgress = loadSurahProgress(surahId);
+    const savedProgress = loadQuranProgress();
     if (savedProgress) {
-      setProgress(savedProgress);
-      setCurrentVerseIndex(savedProgress.currentVerseIndex || 0);
+      syncQuranProgress(savedProgress);
+
+      if (!savedProgress.surahProgresses[surahId]) {
+        initialiseSurahProgress(surahId);
+      }
+
+      setCurrentVerseIndex(
+        savedProgress.surahProgresses[surahId]?.currentVerseIndex || 0
+      );
+    }
+    else {
+      initialiseSurahProgress(surahId);
     }
   }, [surahId]);
 
   // Save progress to localStorage
   useEffect(() => {
-    saveSurahProgress(surahId, progress);
-  }, [progress, surahId]);
+    saveQuranProgress({ surahProgresses });
+  }, [surahProgresses]);
 
-  const { current, best } = useGameplayStore(
-    (state) => state.streak
-  );
+  const surahProgress: SurahProgress = surahProgresses[surahId];
+  if (!surahProgress) {
+        return (
+          <div className="flex items-center justify-center py-12">
+            <Loading title={`Surah ${surahName}`} />
+          </div>
+        );
+  }
 
   const currentVerse = verses[currentVerseIndex];
   const totalVerses = verses.length;
@@ -60,26 +81,13 @@ export function MemorizationInterface({
     const verseProgress: VerseProgress = {
       isCompleted: nextWordIndex >= verse.words.length,
       currentWordIndex: nextWordIndex,
-      totalWords: verse.words.length,
     };
 
-    setProgress((prev) => ({
-      ...prev,
-      verseProgresses: {
-        ...prev.verseProgresses,
-        [currentVerseIndex]: verseProgress,
-      },
-    }));
+    updateVerseProgress(surahId, currentVerseIndex, verseProgress);
 
     if (nextWordIndex >= verse.words.length) {
       // Verse completed
-      setProgress((prev) => ({
-        ...prev,
-        completedVerses: [
-          ...prev.completedVerses.filter((v) => v !== currentVerseIndex),
-          currentVerseIndex,
-        ],
-      }));
+      markVerseCompleted(surahId, currentVerseIndex);
       setViewMode("completed");
     } else {
       setCurrentWordIndex(nextWordIndex);
@@ -98,49 +106,33 @@ export function MemorizationInterface({
     if (currentVerseIndex < totalVerses - 1) {
       setCurrentVerseIndex(currentVerseIndex + 1);
 
-      const isCompleted = progress.completedVerses.includes(currentVerseIndex + 1);
+      const isCompleted = surahProgress.completedVerses.includes(currentVerseIndex + 1);
       if (isCompleted) {
         setViewMode("review");
         setCurrentWordIndex(0);
       } else {
         setViewMode("memorizing");
         setCurrentWordIndex(
-          progress.verseProgresses[currentVerseIndex + 1]?.currentWordIndex || 0
+          surahProgress.verseProgresses[currentVerseIndex + 1]?.currentWordIndex || 0
         );
       }
 
-      setProgress((prev) => ({
-        ...prev,
-        currentVerseIndex: currentVerseIndex + 1,
-      }));
+      moveToNextVerse(surahId);
     }
   };
 
   const handleReset = () => {
     if (confirm("Are you sure you want to reset all progress for this Surah?")) {
-      setProgress({
-        surahId,
-        currentVerseIndex: 0,
-        completedVerses: [],
-        verseProgresses: {},
-      });
+      initialiseSurahProgress(surahId);
       setCurrentVerseIndex(0);
       setCurrentWordIndex(0);
       setViewMode("memorizing");
-      clearSurahProgress(surahId);
+      saveQuranProgress({ surahProgresses });
     }
   };
 
-  if (!currentVerse) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <Loading title="Surah" />
-      </div>
-    );
-  }
-
-  const isVerseCompleted = progress.completedVerses.includes(currentVerseIndex);
-  const isSurahCompleted = progress.completedVerses.length === totalVerses;
+  const isVerseCompleted = surahProgress.completedVerses.includes(currentVerseIndex);
+  const isSurahCompleted = surahProgress.completedVerses.length === totalVerses;
 
   // Show completion screen if Surah is completed
   if (isSurahCompleted) {

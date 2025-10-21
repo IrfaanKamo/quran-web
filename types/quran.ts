@@ -103,16 +103,3 @@ export interface WordGuessState {
   options: Word[];
   correctWord: Word;
 }
-
-export interface VerseProgress {
-  isCompleted: boolean;
-  currentWordIndex: number;
-  totalWords: number;
-}
-
-export interface SurahProgress {
-  surahId: number;
-  currentVerseIndex: number;
-  completedVerses: number[];
-  verseProgresses: { [key: number]: VerseProgress };
-}
