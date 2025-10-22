@@ -29,7 +29,7 @@ export function MemorizationInterface({
   const [viewMode, setViewMode] = useState<VerseViewMode>("memorizing");
   const [storageService, setStorageService] = useState<QuranProgressStorage | null>(null);
 
-  const { current, best } = useGameplayStore((state) => state.streak);
+  const { streak, reset } = useGameplayStore((state) => state);
   const {
     surahProgresses,
     syncQuranProgress,
@@ -137,13 +137,14 @@ export function MemorizationInterface({
     }
   };
 
-  const handleReset = () => {
-    if (confirm("Are you sure you want to reset all progress for this Surah?")) {
+  const handleReset = async() => {
+    if (confirm("Are you sure you want to reset all progress for this Surah? You will lose your current streak.")) {
       initialiseSurahProgress(surahId);
       setCurrentVerseIndex(0);
       setCurrentWordIndex(0);
       setViewMode("memorizing");
-      //saveQuranProgress({ surahProgresses });
+      reset();
+      await storageService?.saveQuranProgress({ surahProgresses });
     }
   };
 
@@ -171,7 +172,7 @@ export function MemorizationInterface({
       <div className="bg-white border-b border-gray-200 sticky top-0 z-10">
         <div className="flex justify-between max-w-4xl mx-auto p-4">
           <h1 className="text-2xl font-bold text-gray-900">{`Surah ${surahName}`}</h1>
-          <StreakCounter currentStreak={current} bestStreak={best} />
+          <StreakCounter currentStreak={streak.current} bestStreak={streak.best} />
         </div>
       </div>
 

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import { useAsyncClick } from "@/hooks/useAsyncClick";
 
 interface SurahCompletionProps {
   surahName: string;
@@ -19,7 +20,7 @@ interface SurahCompletionProps {
   totalAyahs: number;
   longestStreak?: string;
   accuracy?: number;
-  onPlayAgain?: () => void;
+  onPlayAgain?: () => Promise<void>;
 }
 
 export function SurahCompletion({
@@ -31,6 +32,7 @@ export function SurahCompletion({
   onPlayAgain,
 }: SurahCompletionProps) {
   const [showAnimation, setShowAnimation] = useState(false);
+  const { handleClick: handleOnPlayAgain, loading } = useAsyncClick(onPlayAgain || (async () => {}));
 
   useEffect(() => {
     // scroll to top of screen to show completion message
@@ -177,7 +179,8 @@ export function SurahCompletion({
 
           {onPlayAgain && (
             <Button
-              onClick={onPlayAgain}
+              onClick={handleOnPlayAgain}
+              disabled={loading}
               variant="outline"
               size="lg"
               className="border-2 border-green-600 text-green-600 hover:bg-green-50 px-8 py-3 text-lg font-semibold shadow-lg hover:shadow-xl transform transition-all hover:scale-105 active:scale-95"
