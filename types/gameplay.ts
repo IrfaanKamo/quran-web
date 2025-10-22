@@ -5,9 +5,9 @@ export interface Streak {
 }
 
 export interface StreakActions {
-  increment: () => void;
-  reset: () => void;
-  initialise: (current: number, best: number) => void;
+  incrementStreak: () => void;
+  resetStreak: () => void;
+  syncGameProgress: (gameProgress: GameState) => void;
 }
 
 export interface GameState {

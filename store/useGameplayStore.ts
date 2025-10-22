@@ -10,7 +10,7 @@ export const useGameplayStore = create<GameplayStore>((set) => ({
         best: 0, 
     },
     //Streak Actions
-    increment: () => set((state) => {
+    incrementStreak: () => set((state) => {
         const newCurrent = state.streak.current + 1;
         const newBest = Math.max(newCurrent, state.streak.best);
         return {
@@ -20,16 +20,13 @@ export const useGameplayStore = create<GameplayStore>((set) => ({
             },
         };
     }),
-    reset: () => set(() => ({
+    resetStreak: () => set(() => ({
         streak: {
             current: 0,
             best: useGameplayStore.getState().streak.best,
         },
     })),
-    initialise: (current: number, best: number) => set(() => ({
-        streak: {
-            current,
-            best,
-        },
+    syncGameProgress: (gameProgress: GameState) => set(() => ({
+        ...gameProgress
     })),
 }));

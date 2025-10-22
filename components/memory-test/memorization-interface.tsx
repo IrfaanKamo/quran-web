@@ -11,13 +11,15 @@ import { useGameplayStore } from "@/store/useGameplayStore";
 import { StreakCounter } from "../widgets/streak-counter";
 import { useQuranProgressStore } from "@/store/useQuranProgressStore";
 import { SurahProgress, VerseProgress } from "@/types/gameplay";
-import { QuranProgressStorage } from "@/types/storage";
+import { GameProgressStorage, QuranProgressStorage } from "@/types/storage";
 
 interface MemorizationInterfaceProps {
   verses: Verse[];
   surahId: number;
   surahName: string;
 }
+
+type Storage = (QuranProgressStorage & GameProgressStorage) | null;
 
 export function MemorizationInterface({
   verses,
@@ -27,9 +29,9 @@ export function MemorizationInterface({
   const [currentVerseIndex, setCurrentVerseIndex] = useState(0);
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
   const [viewMode, setViewMode] = useState<VerseViewMode>("memorizing");
-  const [storageService, setStorageService] = useState<QuranProgressStorage | null>(null);
+  const [storageService, setStorageService] = useState<Storage>(null);
 
-  const { streak, reset } = useGameplayStore((state) => state);
+  const { streak, resetStreak, syncGameProgress } = useGameplayStore((state) => state);
   const {
     surahProgresses,
     syncQuranProgress,
@@ -41,14 +43,14 @@ export function MemorizationInterface({
 
   // Load progress from storage
   useEffect(() => {
-    let storage: QuranProgressStorage | null = storageService;
+    let storage: Storage = storageService;
     if (!storageService) {
       const userLoggedIn = false;
       storage = userLoggedIn ? null : new LocalStorage();
       setStorageService(storage);
     }
 
-    const initProgress = async () => {
+    const initQuranProgress = async () => {
       const savedProgress = await storage?.loadQuranProgress();
       if (savedProgress) {
         syncQuranProgress(savedProgress);
@@ -65,16 +67,16 @@ export function MemorizationInterface({
       }
     };
 
-    initProgress();
-  }, [surahId]);
-
-  // Save progress to storage
-  useEffect(() => {
-    const saveProgress = async () => {
-      await storageService?.saveQuranProgress({ surahProgresses });
+    const initGameProgress = async () => {
+      const savedProgress = await storage?.loadGameProgress();
+      if (savedProgress) {
+        syncGameProgress(savedProgress);
+      }
     };
-    saveProgress();
-  }, [surahProgresses]);
+
+    initQuranProgress();
+    initGameProgress();
+  }, [surahId]);
 
   // Surah Loader
   const surahProgress: SurahProgress = surahProgresses[surahId];
@@ -118,7 +120,7 @@ export function MemorizationInterface({
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentVerseIndex < totalVerses - 1) {
       setCurrentVerseIndex(currentVerseIndex + 1);
 
@@ -131,20 +133,28 @@ export function MemorizationInterface({
         setCurrentWordIndex(
           surahProgress.verseProgresses[currentVerseIndex + 1]?.currentWordIndex || 0
         );
+        // Save progress when moving to a new verse
+        await storageService?.saveQuranProgress({ surahProgresses });
+        await storageService?.saveGameProgress({ streak: { ...streak } });
       }
 
       moveToNextVerse(surahId);
     }
   };
 
-  const handleReset = async() => {
-    if (confirm("Are you sure you want to reset all progress for this Surah? You will lose your current streak.")) {
+  const handleReset = async () => {
+    if (
+      confirm(
+        "Are you sure you want to reset all progress for this Surah? You will lose your current streak."
+      )
+    ) {
       initialiseSurahProgress(surahId);
       setCurrentVerseIndex(0);
       setCurrentWordIndex(0);
       setViewMode("memorizing");
-      reset();
+      resetStreak();
       await storageService?.saveQuranProgress({ surahProgresses });
+      await storageService?.saveGameProgress({ streak: { ...streak } });
     }
   };
 

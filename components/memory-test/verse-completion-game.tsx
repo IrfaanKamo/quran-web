@@ -9,6 +9,7 @@ import { CheckCircle, StepForward, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { generateWordOptions } from "@/lib/quran-api";
 import { useGameplayStore } from "@/store/useGameplayStore";
+import { useAsyncClick } from "@/hooks/useAsyncClick";
 
 interface VerseCompletionGameProps {
   currentVerse: Verse;
@@ -16,7 +17,7 @@ interface VerseCompletionGameProps {
   currentWordIndex: number;
   viewMode: VerseViewMode;
   onWordComplete: () => void;
-  onNext: () => void;
+  onNext: () => Promise<void>;
 }
 
 export function VerseCompletionGame({
@@ -32,9 +33,10 @@ export function VerseCompletionGame({
   const completedWords = isVerseCompleted ? words : words.slice(0, currentWordIndex);
 
   const [guessState, setGuessState] = useState<WordGuessState | null>(null);
+  const { handleClick: handleOnNext, loading: loadingNextVerse } = useAsyncClick(onNext);
 
-  const incrementStreak = useGameplayStore((state) => state.increment);
-  const resetStreak = useGameplayStore((state) => state.reset);
+  const incrementStreak = useGameplayStore((state) => state.incrementStreak);
+  const resetStreak = useGameplayStore((state) => state.resetStreak);
 
   useEffect(() => {
     if (currentWordIndex < words.length) {
@@ -223,7 +225,7 @@ export function VerseCompletionGame({
                   </div>
                   <div className="text-green-600 mb-4">Ayah completed correctly!</div>
                   <div className="flex flex-wrap justify-center items-center">
-                    <Button onClick={onNext} className="bg-green-600 hover:bg-green-700">
+                    <Button onClick={handleOnNext} disabled={loadingNextVerse} className="bg-green-600 hover:bg-green-700">
                       Next Ayah
                       <StepForward className="h-4 w-4 ml-1" />
                     </Button>
