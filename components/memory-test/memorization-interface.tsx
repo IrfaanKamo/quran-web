@@ -5,10 +5,10 @@ import { Verse, VerseViewMode } from "@/types/quran";
 import { NavigationControls } from "./navigation-controls";
 import { VerseCompletionGame } from "./verse-completion-game";
 import { SurahCompletion } from "./surah-completion";
-import Loading from "./loading";
-import { loadQuranProgress, saveQuranProgress } from "@/lib/gameplay";
+import Loading from "../common/loading";
+import { loadQuranProgress, saveQuranProgress } from "@/storage/localStorage";
 import { useGameplayStore } from "@/store/useGameplayStore";
-import { StreakCounter } from "./streak-counter";
+import { StreakCounter } from "../widgets/streak-counter";
 import { useQuranProgressStore } from "@/store/useQuranProgressStore";
 import { SurahProgress, VerseProgress } from "@/types/gameplay";
 

@@ -6,8 +6,8 @@ import { getChapters } from "@/lib/quran-api";
 import Link from "next/link";
 import { BadgeCheckIcon, BookOpen, MapPin } from "lucide-react";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
-import Loading from "./loading";
-import { Badge } from "./ui/badge";
+import Loading from "../common/loading";
+import { Badge } from "../ui/badge";
 import { QuranProgress } from "@/types/gameplay";
 
 export function SurahList() {

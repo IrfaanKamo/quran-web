@@ -1,9 +1,9 @@
 import { Suspense } from "react";
 import { getChapter, getVerses } from "@/lib/quran-api";
 import { notFound } from "next/navigation";
-import { MemorizationInterface } from "@/components/memorization-interface";
+import { MemorizationInterface } from "@/components/memory-test/memorization-interface";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
-import Loading from "@/components/loading";
+import Loading from "@/components/common/loading";
 
 interface PageProps {
   params: Promise<{ id: string }>;
