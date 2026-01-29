@@ -1,4 +1,4 @@
-import { SurahList } from "@/components/surah-list";
+import { SurahList } from "@/components/dashboard/surah-list";
 import { BookOpen, Sparkles } from "lucide-react";
 
 export default function Home() {

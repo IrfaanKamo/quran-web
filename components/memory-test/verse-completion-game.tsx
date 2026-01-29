@@ -1,13 +1,15 @@
 "use client";
 
 import { Verse, VerseViewMode, Word, WordGuessState } from "@/types/quran";
-import { Badge } from "./ui/badge";
-import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Progress } from "./ui/progress";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Progress } from "../ui/progress";
 import { CheckCircle, StepForward, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { generateWordOptions } from "@/lib/quran-api";
+import { useGameplayStore } from "@/store/useGameplayStore";
+import { useAsyncClick } from "@/hooks/useAsyncClick";
 
 interface VerseCompletionGameProps {
   currentVerse: Verse;
@@ -15,7 +17,7 @@ interface VerseCompletionGameProps {
   currentWordIndex: number;
   viewMode: VerseViewMode;
   onWordComplete: () => void;
-  onNext: () => void;
+  onNext: () => Promise<void>;
 }
 
 export function VerseCompletionGame({
@@ -31,6 +33,10 @@ export function VerseCompletionGame({
   const completedWords = isVerseCompleted ? words : words.slice(0, currentWordIndex);
 
   const [guessState, setGuessState] = useState<WordGuessState | null>(null);
+  const { handleClick: handleOnNext, loading: loadingNextVerse } = useAsyncClick(onNext);
+
+  const incrementStreak = useGameplayStore((state) => state.incrementStreak);
+  const resetStreak = useGameplayStore((state) => state.resetStreak);
 
   useEffect(() => {
     if (currentWordIndex < words.length) {
@@ -53,6 +59,12 @@ export function VerseCompletionGame({
 
     const selectedWord = guessState.options[optionIndex];
     const isCorrect = selectedWord.id === guessState.correctWord.id;
+
+    if (isCorrect) {
+      incrementStreak();
+    } else {
+      resetStreak();
+    }
 
     setGuessState((prev) => ({
       ...prev!,
@@ -96,7 +108,7 @@ export function VerseCompletionGame({
             </div>
             <Progress value={verseProgress} className="h-2" />
           </CardHeader>
-          <CardContent className="space-y-8">
+          <CardContent className="space-y-1">
             {/* Arabic Text */}
             <div className="bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl p-8">
               <div className="text-center">
@@ -211,11 +223,9 @@ export function VerseCompletionGame({
                   <div className="text-lg font-semibold text-green-600 mb-1">
                     🎉 MashAllah 🎉
                   </div>
-                  <div className="text-green-600 mb-4">
-                    Ayah completed correctly!
-                  </div>
+                  <div className="text-green-600 mb-4">Ayah completed correctly!</div>
                   <div className="flex flex-wrap justify-center items-center">
-                    <Button onClick={onNext} className="bg-green-600 hover:bg-green-700">
+                    <Button onClick={handleOnNext} disabled={loadingNextVerse} className="bg-green-600 hover:bg-green-700">
                       Next Ayah
                       <StepForward className="h-4 w-4 ml-1" />
                     </Button>

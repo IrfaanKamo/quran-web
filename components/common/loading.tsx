@@ -12,9 +12,9 @@ export default function Loading({ title }: LoadingProps) {
         <EmptyMedia variant="icon">
           <Spinner />
         </EmptyMedia>
-        <EmptyTitle>Fetching {title}...</EmptyTitle>
+        <EmptyTitle>Loading {title}...</EmptyTitle>
         <EmptyDescription>
-          Do not refresh the page.
+          We're getting things ready.
         </EmptyDescription>
       </EmptyHeader>
     </Empty>

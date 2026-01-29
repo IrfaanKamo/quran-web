@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import { getChapter, getVerses } from "@/lib/quran-api";
 import { notFound } from "next/navigation";
-import { MemorizationInterface } from "@/components/memorization-interface";
+import { MemorizationInterface } from "@/components/memory-test/memorization-interface";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
+import Loading from "@/components/common/loading";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -16,30 +18,15 @@ export default async function SurahPage({ params }: PageProps) {
   }
 
   try {
-    const [chapterResponse, versesResponse] = await Promise.all([
-      getChapter(surahId),
-      getVerses(surahId),
-    ]);
-
-    const chapter = chapterResponse.chapter;
-    const verses = versesResponse.verses;
-
-    if (!verses || verses.length === 0) {
-      throw new Error("No verses found for this Surah");
-    }
-
     return (
       <ErrorBoundary>
-        <MemorizationInterface
-          verses={verses}
-          surahId={surahId}
-          surahName={chapter.name_simple}
-        />
+        <Suspense fallback={<Loading title="Surah" />}>
+          <SurahContent surahId={surahId} />
+        </Suspense>
       </ErrorBoundary>
     );
   } catch (error) {
     console.error("Error loading Surah:", error);
-
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -57,4 +44,26 @@ export default async function SurahPage({ params }: PageProps) {
       </div>
     );
   }
+}
+
+async function SurahContent({ surahId }: { surahId: number }) {
+  const [chapterResponse, versesResponse] = await Promise.all([
+    getChapter(surahId),
+    getVerses(surahId),
+  ]);
+
+  const chapter = chapterResponse.chapter;
+  const verses = versesResponse.verses;
+
+  if (!verses || verses.length === 0) {
+    throw new Error("No verses found for this Surah");
+  }
+
+  return (
+    <MemorizationInterface
+      verses={verses}
+      surahId={surahId}
+      surahName={chapter.name_simple}
+    />
+  );
 }

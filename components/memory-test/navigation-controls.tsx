@@ -1,14 +1,17 @@
 "use client";
 
+import { useAsyncClick } from "@/hooks/useAsyncClick";
 import { ChevronLeft, ChevronRight, Home, RotateCcw } from "lucide-react";
 import Link from "next/link";
+import { Spinner } from "../ui/spinner";
+import { on } from "events";
 
 interface NavigationControlsProps {
   currentVerseIndex: number;
   totalVerses: number;
   onPrevious: () => void;
-  onNext: () => void;
-  onReset: () => void;
+  onNext: () => Promise<void>;
+  onReset: () => Promise<void>;
   canGoPrevious: boolean;
   canGoNext: boolean;
 }
@@ -22,6 +25,8 @@ export function NavigationControls({
   canGoPrevious,
   canGoNext,
 }: NavigationControlsProps) {
+  const { handleClick: handleOnReset, loading: loadingReset } = useAsyncClick(onReset);
+  const { handleClick: handleOnNext, loading: loadingNextVerse } = useAsyncClick(onNext);
   return (
     <div className="fixed bottom-0 w-full bg-white border-t border-gray-200 p-4">
       <div className="max-w-4xl mx-auto flex items-center justify-between">
@@ -35,11 +40,12 @@ export function NavigationControls({
             <Home size={20} />
           </Link>
           <button
-            onClick={onReset}
+            onClick={handleOnReset}
+            disabled={loadingReset}
             className="p-2 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
             title="Reset Progress"
           >
-            <RotateCcw size={20} />
+            {loadingReset ? <Spinner className="size-20" /> : <RotateCcw size={20} />}
           </button>
         </div>
 
@@ -56,12 +62,14 @@ export function NavigationControls({
 
           <div className="text-center text-sm font-medium text-gray-600 flex flex-col sm:flex-row">
             <div className="sm:pr-1">Ayah</div>
-            <div>{currentVerseIndex + 1} of {totalVerses}</div>
+            <div>
+              {currentVerseIndex + 1} of {totalVerses}
+            </div>
           </div>
 
           <button
-            onClick={onNext}
-            disabled={!canGoNext}
+            onClick={handleOnNext}
+            disabled={!canGoNext || loadingNextVerse}
             className="p-2 text-gray-600 hover:text-green-500 hover:bg-green-50 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title="Next Verse"
           >
