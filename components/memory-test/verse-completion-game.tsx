@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Progress } from "../ui/progress";
 import { CheckCircle, StepForward, XCircle } from "lucide-react";
 import { useEffect, useState } from "react";
-import { generateWordOptions } from "@/lib/quran-api";
+import { generateWordOptions } from "@/services/quran-api";
 import { useGameplayStore } from "@/store/useGameplayStore";
 import { useAsyncClick } from "@/hooks/useAsyncClick";
 
