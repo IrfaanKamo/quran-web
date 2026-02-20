@@ -4,6 +4,7 @@ import { Inter, Amiri } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { BookOpen } from "lucide-react";
 import Link from "next/link";
+import AccountMenu from "@/components/nav/account-menu";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const amiri = Amiri({
@@ -34,6 +35,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     Taddabur
                   </h1>
                 </Link>
+              </div>
+              <div className="flex items-center gap-4">
+                <AccountMenu />
               </div>
             </div>
           </div>

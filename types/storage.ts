@@ -11,3 +11,9 @@ export interface GameProgressStorage {
   saveGameProgress: (progress: GameState) => Promise<void>;
   clearGameProgress: () => Promise<void>;
 }
+
+export interface AuthStorage {
+  setAccessTokenExpiry: (minutesToExpiry: number) => void;
+  getAccessTokenExpiry: () => string | null;
+  clearAccessTokenExpiry: () => void;
+}
