@@ -10,18 +10,18 @@ import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { logout as apiLogout } from "@/services/auth";
 import { Spinner } from "@/components/ui/spinner";
+import { useAuthActions } from "@/hooks/useAuthActions";
 
 export function AccountMenu() {
   const user = useAuthStore((s) => s.user);
-  const logout = useAuthStore((s) => s.logout);
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement | null>(null);
   const buttonRef = useRef<HTMLButtonElement | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [menuPos, setMenuPos] = useState({ top: 0, left: 0 });
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { handleLogout, isLoading } = useAuthActions();
 
   useEffect(() => {
     function onDoc(e: Event) {
@@ -73,17 +73,6 @@ export function AccountMenu() {
       window.removeEventListener("scroll", compute, true);
     };
   }, [open]);
-
-  useEffect(() => {
-    try {
-      const raw =
-        typeof window !== "undefined" ? localStorage.getItem("auth_session") : null;
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (!user) useAuthStore.getState().setUser(parsed);
-      }
-    } catch {}
-  }, []);
 
   const initials = (user ? user.username || user.email || "U" : "U")
     .toString()
@@ -167,25 +156,18 @@ export function AccountMenu() {
                 <button
                   onClick={async () => {
                     setError(null);
-                    setLoading(true);
                     try {
-                      await apiLogout();
+                      await handleLogout();
                     } catch (e: any) {
-                      // show server error but continue to clear local session
                       setError(e?.message ?? "Logout failed");
                     } finally {
-                      try {
-                        logout();
-                      } catch {}
-                      setLoading(false);
-                      setOpen(false);
                       router.push("/");
                     }
                   }}
-                  disabled={loading}
+                  disabled={isLoading}
                   className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 flex items-center gap-2"
                 >
-                  {loading ? (
+                  {isLoading ? (
                     <Spinner />
                   ) : (
                     <>

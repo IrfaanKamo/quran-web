@@ -12,6 +12,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { cn } from "@/lib/utils";
 import { useAsyncClick } from "@/hooks/useAsyncClick";
 import { login as apiLogin, register as apiRegister } from "@/services/auth";
+import { useAuthActions } from "@/hooks/useAuthActions";
 
 const loginSchema = z.object({
   username: z
@@ -44,6 +45,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const { handleRegister, handleLogin, isLoading, error: authError } = useAuthActions();
 
   interface FormValues {
     username: string;
@@ -70,26 +72,13 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
   const submit = async (values: FormValues) => {
     setError(null);
     setSuccess(null);
-
+    
     if (mode === "register") {
       try {
-        const res = await apiRegister(values.username, values.email!, values.password);
-
-        // If registration returns a user/session, persist and set auth store
-        if (res) {
-          const sessionUser = (res && (res.user ?? res)) || null;
-          try {
-            localStorage.setItem("auth_session", JSON.stringify(sessionUser));
-          } catch {}
-          try {
-            const { useAuthStore } = await import("@/store/useAuthStore");
-            useAuthStore.getState().setUser(sessionUser);
-          } catch {}
-        }
-
+        await handleRegister(values.username, values.email!, values.password);
         setSuccess("Account created. Redirecting…");
         router.push("/");
-        return; 
+        return;
       } catch (err: any) {
         // server-side field error
         if (err && typeof err === "object" && "field" in err && "message" in err) {
@@ -100,29 +89,14 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
         } else if (err instanceof Error) {
           setError(err.message);
         } else {
-          setError("Registration failed");
+          setError(authError);
         }
         return;
       }
     }
 
     try {
-      const res = await apiLogin(values.username, values.password);
-
-      // Persist session and update global auth store (if backend returned anything useful)
-      if (res) {
-        // prefer res.user if present, else res
-        const sessionUser = (res && (res.user ?? res)) || null;
-        try {
-          localStorage.setItem("auth_session", JSON.stringify(sessionUser));
-        } catch {}
-        // set into zustand store (import lazily to avoid circular server/client issues)
-        try {
-          const { useAuthStore } = await import("@/store/useAuthStore");
-          useAuthStore.getState().setUser(sessionUser);
-        } catch {}
-      }
-
+      await handleLogin(values.username, values.password);
       setSuccess("Logged in. Redirecting…");
       router.push("/");
       return;
@@ -135,7 +109,7 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
       } else if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError("Login failed");
+        setError(authError);
       }
       return;
     }
@@ -166,7 +140,10 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
             </div>
           )}
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="username"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Username
             </label>
             <input
@@ -190,7 +167,10 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
 
           {mode === "register" && (
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="email"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Email
               </label>
               <input
@@ -211,10 +191,13 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                 </div>
               )}
             </div>
-          )} 
+          )}
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Password
             </label>
             <input
@@ -238,7 +221,10 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
 
           {mode === "register" && (
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="confirmPassword"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 Confirm password
               </label>
               <input
@@ -246,7 +232,9 @@ export function AuthForm({ mode }: { mode: "login" | "register" }) {
                 type="password"
                 {...register("confirmPassword")}
                 aria-invalid={!!errors.confirmPassword}
-                aria-describedby={errors.confirmPassword ? "confirmPassword-error" : undefined}
+                aria-describedby={
+                  errors.confirmPassword ? "confirmPassword-error" : undefined
+                }
                 className={cn(
                   "w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-400",
                   "placeholder:text-slate-400",

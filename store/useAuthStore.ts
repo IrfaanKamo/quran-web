@@ -1,51 +1,42 @@
-import { create } from "zustand";
+import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-type User = {
-  id?: string;
-  username?: string;
-  email?: string;
+interface User {
+  email: string;
+  username: string;
   avatarUrl?: string;
-  [key: string]: any;
-} | null;
+}
 
-type AuthState = {
-  user: User;
-  setUser: (u: User) => void;
+interface AuthState {
+  user: User | null;
+  expiresAt: number | null;
+  _hasHydrated: boolean;
+  setAuth: (user: User, durationMinutes: number) => void;
   logout: () => void;
-  isLoggedIn: () => boolean;
-};
+  setHasHydrated: (state: boolean) => void;
+}
 
-const STORAGE_KEY = "auth_session";
+export const useAuthStore = create<AuthState>()(
+  persist(
+    (set) => ({
+      user: null,
+      expiresAt: null,
+      _hasHydrated: false,
 
-export const useAuthStore = create<AuthState>((set: any) => ({
-  // start with null on both server and client to avoid hydration mismatches
-  user: null,
+      setAuth: (user, durationMinutes) => {
+        const expirationTime = Date.now() + durationMinutes * 60 * 1000;
+        set({ user, expiresAt: expirationTime });
+      },
 
-  setUser: (u: User) => {
-    set({ user: u });
-    if (typeof window !== "undefined") {
-      try {
-        if (u) localStorage.setItem(STORAGE_KEY, JSON.stringify(u));
-        else localStorage.removeItem(STORAGE_KEY);
-      } catch (e) {
-        // ignore
-      }
+      logout: () => set({ user: null, expiresAt: null }),
+      
+      setHasHydrated: (state) => set({ _hasHydrated: state }),
+    }),
+    {
+      name: 'auth-storage',
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     }
-  },
-
-  logout: () => {
-    set({ user: null });
-    if (typeof window !== "undefined") {
-      try {
-        localStorage.removeItem(STORAGE_KEY);
-      } catch (e) {}
-    }
-  },
-
-  isLoggedIn: () => {
-    const raw = typeof window !== "undefined" ? localStorage.getItem(STORAGE_KEY) : null;
-    return !!raw;
-  },
-}));
-
-export default useAuthStore;
+  )
+);
