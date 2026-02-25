@@ -1,6 +1,6 @@
 import { ChapterResponse, ChaptersResponse, VersesResponse, Word } from "@/types/quran";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
+const BASE_URL = `${process.env.NEXT_PUBLIC_API_URL}/quran-api`;
 const cache = new Map<string, any>();
 const MAX_VERSE_COUNT = 30; // Define a maximum verse count for filtering
 

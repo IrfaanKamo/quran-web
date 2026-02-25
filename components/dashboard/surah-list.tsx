@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Surah } from "@/types/quran";
-import { getChapters } from "@/lib/quran-api";
+import { getChapters } from "@/services/quran-api";
 import Link from "next/link";
 import { BadgeCheckIcon, BookOpen, MapPin } from "lucide-react";
 import { ErrorBoundary } from "@/components/ui/error-boundary";

@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { getChapter, getVerses } from "@/lib/quran-api";
+import { getChapter, getVerses } from "@/services/quran-api";
 import { notFound } from "next/navigation";
 import { MemorizationInterface } from "@/components/memory-test/memorization-interface";
 import { ErrorBoundary } from "@/components/ui/error-boundary";
