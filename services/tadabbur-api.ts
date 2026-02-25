@@ -7,6 +7,9 @@ const tadabburApi = axios.create({
   withCredentials: true
 });
 
+// Shared refresh promise to prevent multiple concurrent token refresh calls
+let refreshPromise: Promise<void> | null = null;
+
 // Axios interceptor to refresh outdated tokens when making api calls
 tadabburApi.interceptors.response.use(
   (response) => response,
@@ -19,16 +22,25 @@ tadabburApi.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const refreshResponse = await axios.post(
-          `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
-          {},
-          { withCredentials: true }
-        );
+        // If a refresh is already in flight, wait for it instead of firing another
+        if (!refreshPromise) {
+          refreshPromise = axios
+            .post(
+              `${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`,
+              {},
+              { withCredentials: true }
+            )
+            .then((refreshResponse) => {
+              const { user, expiresInMinutes } = refreshResponse.data;
+              const _shortenedExpiryInMins = expiresInMinutes - 2;
+              setAuth(user, _shortenedExpiryInMins);
+            })
+            .finally(() => {
+              refreshPromise = null;
+            });
+        }
 
-        const { user, expiresInMinutes } = refreshResponse.data;
-        const _shortenedExpiryInMins = expiresInMinutes - 2;
-        setAuth(user, _shortenedExpiryInMins || 28);
-
+        await refreshPromise;
         return tadabburApi(originalRequest);
       } catch (refreshError) {
         logout();
