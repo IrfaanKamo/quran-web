@@ -10,7 +10,7 @@ export async function register(username: string, email: string, password: string
     });
 
     const { user, expiresInMinutes } = response.data;
-    useAuthStore.getState().setAuth(user, expiresInMinutes || 28);
+    useAuthStore.getState().setAuth(user, expiresInMinutes);
 
     return response.data;
   } catch (error: any) {
@@ -26,7 +26,7 @@ export async function login(username: string, password: string) {
     const response = await tadabburApi.post("/auth/login", { username, password });
 
     const { user, expiresInMinutes } = response.data;
-    useAuthStore.getState().setAuth(user, expiresInMinutes || 28);
+    useAuthStore.getState().setAuth(user, expiresInMinutes);
 
     return response.data;
   } catch (error: any) {

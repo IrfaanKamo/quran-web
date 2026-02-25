@@ -8,7 +8,6 @@ import { LogOut, User } from "lucide-react";
 import { useAuthStore } from "@/store/useAuthStore";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { logout as apiLogout } from "@/services/auth";
 import { Spinner } from "@/components/ui/spinner";
 import { useAuthActions } from "@/hooks/useAuthActions";
 
